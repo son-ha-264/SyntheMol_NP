@@ -142,3 +142,8 @@ dmypy.json
 
 # Weights & Biases
 wandb
+
+# Reaction Stuff
+/pretrained
+/junk
+/analysis

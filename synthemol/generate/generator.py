@@ -21,6 +21,14 @@ from synthemol.generate.scorer import MoleculeScorer
 from synthemol.generate.rl_models import RLModel
 from synthemol.reactions import Reaction
 from synthemol.utils import random_choice
+from synthemol.nn_reaction import rxnt5
+
+from synthemol.constants import (
+    T5_REACTION_MODEL_PATH,
+    T5_DEVICE,
+    TOPK,
+    NUM_BEAMS,
+)
 
 
 morgan_fingerprint_generator = get_fingerprint_generator("morgan")
@@ -121,6 +129,9 @@ class Generator:
         self.min_score_weight = min_score_weight
         self.wandb_log = wandb_log
         self.log_path = log_path
+
+        # Load forward product prediction model
+        self.t5_model = rxnt5(device=T5_DEVICE, path_t5=T5_REACTION_MODEL_PATH)
 
         # Set up list of rollout stats
         self.rollout_stats_record: list[dict[str, Any]] = []
@@ -305,6 +316,10 @@ class Generator:
                 ),
             )
 
+            molecules = sorted(
+                node.molecules, key=lambda frag: molecule_to_reactant_index[frag]
+            )
+
             product_nodes += [
                 Node(
                     explore_weight=self.explore_weight,
@@ -318,6 +333,31 @@ class Generator:
                 )
                 for product in products
             ]
+
+        ### TODO: Run T5 here and add T5 products. Mark that it is non-SMARTS reaction
+        products_from_t5 = self.t5_model.forward_prediction(smis=['.'.join(list(node.molecules))], products_from_smarts=list(product_set), topk=TOPK, num_beams=NUM_BEAMS)
+        products_from_t5 = products_from_t5[0]
+        #product_set |= set(products_from_t5)
+
+        reaction_log = ReactionLog(
+            chemical_space="T5",
+            reaction_id=0,
+            reactant_ids=node.unique_building_block_ids
+        )
+
+        product_nodes += [
+            Node(
+                explore_weight=self.explore_weight,
+                scorer=self.scorer,
+                molecules=(product,),
+                unique_building_block_ids=node.unique_building_block_ids,
+                construction_log=ConstructionLog(
+                    node.construction_log.reaction_logs + (reaction_log,)
+                ),
+                rollout_num=self.rollout_num,
+            )
+            for product in products_from_t5
+        ]
 
         return product_nodes
 

@@ -18,6 +18,10 @@ from synthemol.models import (
     sklearn_load,
     sklearn_predict_on_molecule_ensemble,
 )
+import sys, os
+from rdkit.Chem import RDConfig
+sys.path.append(os.path.join(RDConfig.RDContribDir, 'NP_Score'))
+import npscorer
 
 class Scorer(ABC):
     """Base class for scoring molecules."""
@@ -32,6 +36,22 @@ class Scorer(ABC):
         pass
 
 
+class NPScorer(Scorer):
+    """Scores molecules using NPScore."""
+
+    def __init__(self):
+        self.fscore = npscorer.readNPModel()
+        
+    def __call__(self, smiles: str) -> float:
+        """Scores a molecule using QED.
+
+        :param smiles: A SMILES string.
+        :return: The score of the molecule.
+        """
+        m = Chem.MolFromSmiles(smiles)
+        return (npscorer.scoreMol(m,self.fscore)+5)/10
+
+    
 class QEDScorer(Scorer):
     """Scores molecules using QED."""
 
@@ -314,9 +334,17 @@ def create_scorer(
             raise ValueError("Random forest requires a fingerprint type.")
 
         scorer = SKLearnScorer(model_path=model_path, fingerprint_type=fingerprint_type)
+
+    elif score_type == "npscore":
+        if model_path is not None:
+            raise ValueError("npscore does not use a model path.")
+
+        if fingerprint_type is not None:
+            raise ValueError("npscore does not use fingerprints.")
+
+        scorer = NPScorer()
     else:
         raise ValueError(f"Score type {score_type} is not supported.")
-
     return scorer
 
 

@@ -34,7 +34,7 @@ MOLECULE_TYPE = str | Mol  # Either a SMILES string or an RDKit Mol object
 SKLEARN_MODEL_TYPES = RandomForestClassifier | RandomForestRegressor
 SKLEARN_MODEL_NAME_TYPES = Literal["random_forest"]
 MODEL_TYPES = Literal["random_forest", "chemprop"]
-SCORE_TYPES = Literal["random_forest", "chemprop", "qed", "clogp", "wavelength", "sp2_network"]
+SCORE_TYPES = Literal["random_forest", "chemprop", "qed", "clogp", "wavelength", "sp2_network", "npscore"]
 DATASET_TYPES = Literal["classification", "regression"]
 RL_MODEL_TYPES = Literal["mlp", "chemprop"]
 RL_PREDICTION_TYPES = Literal["classification", "regression"]
@@ -67,3 +67,10 @@ with resources.path("synthemol", "resources") as resources_dir:
 # If using custom building blocks, replace BUILDING_BLOCKS_PATH and set REACTION_TO_BUILDING_BLOCKS_PATH to None
 BUILDING_BLOCKS_PATH = DATA_DIR / "real" / "building_blocks.csv"
 REACTION_TO_BUILDING_BLOCKS_PATH = DATA_DIR / "real" / "reaction_to_building_blocks.pkl"
+
+# Path to t5 forward reaction model
+import torch
+T5_REACTION_MODEL_PATH = "/home/sonh/MAINCE_project/SyntheMol_NP/pretrained/rt5_ft_uspto_npl_custom_replay01_kl01/best"
+T5_DEVICE = "cuda" if torch.cuda.is_available() else "cpu"
+TOPK = 10
+NUM_BEAMS = 10

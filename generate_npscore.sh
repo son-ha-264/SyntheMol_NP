@@ -1,0 +1,13 @@
+synthemol \
+    --score_types npscore \
+    --chemical_spaces real \
+    --building_blocks_score_columns activity \
+    --save_dir generations/chemprop_npscore \
+    --n_rollout 100 \
+    --search_type rl \
+    --rl_model_type chemprop \
+    --rl_model_fingerprint_type rdkit \
+    --building_blocks_paths  /home/sonh/MAINCE_project/SyntheMol_NP/synthemol/resources/real_npscore/building_blocks.csv \
+    --rl_prediction_types regression  \
+    --use_gpu \
+    --max_reactions 3

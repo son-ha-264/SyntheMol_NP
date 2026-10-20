@@ -37,7 +37,7 @@ setup(
         "gdown",
         "matplotlib",
         "networkx",
-        "numpy",
+        "numpy==1.23.5",
         "openpyxl",
         "pandas",
         "torch",
@@ -48,6 +48,7 @@ setup(
         "tqdm",
         "typed-argument-parser>=1.9.0",
         "wandb",
+        "transformers==4.57.6"
     ],
     python_requires=">=3.10",
     classifiers=[
