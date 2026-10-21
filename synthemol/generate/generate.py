@@ -374,6 +374,8 @@ def generate(
         for chemical_space, building_block_data in chemical_space_to_building_block_data.items()
     }
 
+    chemical_space_to_building_block_id_to_smiles['T5'] = {}
+
     # Map building block SMILES to scores
     building_block_smiles_to_scores: dict[str, list[float]] = {
         smiles: list(scores)
