@@ -8,13 +8,15 @@ from collections import Counter
 from rdkit import Chem, RDLogger
 from rdkit.Chem import rdFingerprintGenerator
 
+import torch
+
 RDLogger.DisableLog("rdApp.*")
 _GEN = rdFingerprintGenerator.GetMorganGenerator(radius=2, fpSize=1024)
 
 class rxnt5():
     def __init__(self, device, path_t5, k=3, lam=0.65):
         self.tokenizer = AutoTokenizer.from_pretrained(path_t5, trust_remote_code=True)
-        self.model = AutoModelForSeq2SeqLM.from_pretrained(path_t5, trust_remote_code=True).to(device)
+        self.model = AutoModelForSeq2SeqLM.from_pretrained(path_t5, trust_remote_code=True).to(device).eval()
         self.device = device
         self.k = k
         self.lam = lam
@@ -28,7 +30,8 @@ class rxnt5():
         inp = self.tokenizer(input_t5, return_tensors='pt', padding=True)
         inp = inp.to(self.device)
 
-        output = self.model.generate(**inp, num_beams=num_beams, num_return_sequences=num_beams, return_dict_in_generate=True, output_scores=True)
+        with torch.no_grad():
+            output = self.model.generate(**inp, num_beams=num_beams, num_return_sequences=num_beams, return_dict_in_generate=True, output_scores=True)
         products_list = [self.tokenizer.decode(output['sequences'][i], skip_special_tokens=True).replace(' ', '').rstrip('.') for i in range(len(smis)*topk)] 
         products_list = [products_list[i:i+topk] for i in range(0, len(products_list), topk)]
         sequence_scores_list = output.sequences_scores.tolist()
@@ -80,7 +83,7 @@ class rxnt5():
     def _fp(self, mol):
         return _GEN.GetCountFingerprintAsNumPy(mol).astype(np.float32)
 
-    def _select(self, reactant_smiles, scored_beam, products_from_smarts:List[str]=None, k=3, lam=0.65):
+    def _select(self, reactant_smiles, scored_beam, products_from_smarts:List[str]=None, k=3, lam=0.2):
         """beam: [(product_smiles, logprob)]
         One reaction with multiple possible reactants
         """
