@@ -13,7 +13,7 @@ _GEN = rdFingerprintGenerator.GetMorganGenerator(radius=2, fpSize=1024)
 
 class rxnt5():
     def __init__(self, device, path_t5, k=3, lam=0.65):
-        self.tokenizer = AutoTokenizer.from_pretrained(path_t5, trust_remote_code=True, use_fast=False)
+        self.tokenizer = AutoTokenizer.from_pretrained(path_t5, trust_remote_code=True)
         self.model = AutoModelForSeq2SeqLM.from_pretrained(path_t5, trust_remote_code=True).to(device)
         self.device = device
         self.k = k
