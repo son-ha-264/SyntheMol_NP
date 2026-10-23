@@ -83,7 +83,7 @@ class rxnt5():
     def _fp(self, mol):
         return _GEN.GetCountFingerprintAsNumPy(mol).astype(np.float32)
 
-    def _select(self, reactant_smiles, scored_beam, products_from_smarts:List[str]=None, k=3, lam=0.0):
+    def _select(self, reactant_smiles, scored_beam, products_from_smarts:List[str]=None, k=3, lam=0.2):
         """beam: [(product_smiles, logprob)]
         One reaction with multiple possible reactants
         """
