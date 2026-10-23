@@ -2,8 +2,8 @@ synthemol \
     --score_types npscore \
     --chemical_spaces real \
     --building_blocks_score_columns activity \
-    --save_dir generations/chemprop_npscore \
-    --n_rollout 200 \
+    --save_dir generations/chemprop_npscore_witht5_v2 \
+    --n_rollout 1000 \
     --search_type rl \
     --rl_model_type chemprop \
     --rl_model_fingerprint_type rdkit \
