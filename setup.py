@@ -48,7 +48,8 @@ setup(
         "tqdm",
         "typed-argument-parser>=1.9.0",
         "wandb",
-        "transformers==4.57.6"
+        "transformers==4.57.6",
+        "umap-learn",
     ],
     python_requires=">=3.10",
     classifiers=[
