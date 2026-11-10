@@ -308,34 +308,36 @@ class Generator:
             # Create reaction log
             if chem_space == '':
                 chem_space = reaction.chemical_space
-            reaction_log = ReactionLog(
-                chemical_space=reaction.chemical_space,
-                reaction_id=reaction.reaction_id,
-                reactant_ids=tuple(
-                    self.chemical_space_to_building_block_smiles_to_id[
-                        reaction.chemical_space
-                    ].get(molecule, "-1")
-                    for molecule in molecules
-                ),
-            )
 
-            molecules = sorted(
-                node.molecules, key=lambda frag: molecule_to_reactant_index[frag]
-            )
-
-            product_nodes += [
-                Node(
-                    explore_weight=self.explore_weight,
-                    scorer=self.scorer,
-                    molecules=(product,),
-                    unique_building_block_ids=node.unique_building_block_ids,
-                    construction_log=ConstructionLog(
-                        node.construction_log.reaction_logs + (reaction_log,)
+            for product in products:
+                reaction_log = ReactionLog(
+                    chemical_space=reaction.chemical_space,
+                    reaction_id=reaction.reaction_id,
+                    reactant_ids=tuple(
+                        self.chemical_space_to_building_block_smiles_to_id[
+                            reaction.chemical_space
+                        ].get(molecule, "-1")
+                        for molecule in molecules
                     ),
-                    rollout_num=self.rollout_num,
+                    product=product
                 )
-                for product in products
-            ]
+
+                #molecules = sorted(
+                #    node.molecules, key=lambda frag: molecule_to_reactant_index[frag]
+                #)
+
+                product_nodes += [
+                    Node(
+                        explore_weight=self.explore_weight,
+                        scorer=self.scorer,
+                        molecules=(product,),
+                        unique_building_block_ids=node.unique_building_block_ids,
+                        construction_log=ConstructionLog(
+                            node.construction_log.reaction_logs + (reaction_log,)
+                        ),
+                        rollout_num=self.rollout_num,
+                    )
+                ]
 
         ### TODO: Run T5 here and add T5 products. Mark that it is non-SMARTS reaction
         if len(matching_reactions)>0:
@@ -345,31 +347,32 @@ class Generator:
             #product_set |= set(products_from_t5)
 
             molecules = node.molecules
-            
-            reaction_log = ReactionLog(
-                chemical_space="T5",
-                reaction_id=0,
-                reactant_ids=tuple(
-                    self.chemical_space_to_building_block_smiles_to_id[
-                        chem_space
-                    ].get(molecule, "-1")
-                    for molecule in molecules
-                ),
-            )
 
-            product_nodes += [
-                Node(
-                    explore_weight=self.explore_weight,
-                    scorer=self.scorer,
-                    molecules=(product,),
-                    unique_building_block_ids=node.unique_building_block_ids,
-                    construction_log=ConstructionLog(
-                        node.construction_log.reaction_logs + (reaction_log,)
+            for product in products_from_t5:
+                reaction_log = ReactionLog(
+                    chemical_space="T5",
+                    reaction_id=0,
+                    reactant_ids=tuple(
+                        self.chemical_space_to_building_block_smiles_to_id[
+                            chem_space
+                        ].get(molecule, "-1")
+                        for molecule in molecules
                     ),
-                    rollout_num=self.rollout_num,
+                    product=product
                 )
-                for product in products_from_t5
-            ]
+
+                product_nodes += [
+                    Node(
+                        explore_weight=self.explore_weight,
+                        scorer=self.scorer,
+                        molecules=(product,),
+                        unique_building_block_ids=node.unique_building_block_ids,
+                        construction_log=ConstructionLog(
+                            node.construction_log.reaction_logs + (reaction_log,)
+                        ),
+                        rollout_num=self.rollout_num,
+                    )
+                ]
 
         return product_nodes
 

@@ -6,7 +6,7 @@ class ReactionLog:
     """A ReactionLog contains information about a reaction and the building blocks combined by that reaction."""
 
     def __init__(
-        self, chemical_space: str, reaction_id: int, reactant_ids: tuple[str, ...]
+        self, chemical_space: str, reaction_id: int, reactant_ids: tuple[str, ...], product: str
     ) -> None:
         """Initializes the ReactionLog.
 
@@ -19,6 +19,7 @@ class ReactionLog:
         self.chemical_space = chemical_space
         self.reaction_id = reaction_id
         self.reactant_ids = reactant_ids
+        self.product = product
 
     @property
     def num_reactants(self) -> int:

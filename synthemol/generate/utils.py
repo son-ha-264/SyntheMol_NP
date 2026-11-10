@@ -51,6 +51,8 @@ def save_generated_molecules(
                 f"reaction_{reaction_num}_chemical_space"
             ] = reaction_log.chemical_space
             construction_dict[f"reaction_{reaction_num}_id"] = reaction_log.reaction_id
+            
+            construction_dict[f"reaction_{reaction_num}_product"] = reaction_log.product
 
             reaction_num_to_max_reactant_num[reaction_num] = max(
                 reaction_num_to_max_reactant_num.get(reaction_num, 0),
@@ -95,6 +97,7 @@ def save_generated_molecules(
     for reaction_num in range(1, max_reaction_num + 1):
         columns.append(f"reaction_{reaction_num}_chemical_space")
         columns.append(f"reaction_{reaction_num}_id")
+        columns.append(f"reaction_{reaction_num}_product")
 
         for reactant_num in range(
             1, reaction_num_to_max_reactant_num[reaction_num] + 1
