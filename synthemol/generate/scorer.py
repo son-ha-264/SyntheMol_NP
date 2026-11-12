@@ -18,6 +18,7 @@ from synthemol.models import (
     sklearn_load,
     sklearn_predict_on_molecule_ensemble,
 )
+from synthemol.docking_oracle.hsp90_oracle import make_oracle
 import sys, os
 from rdkit.Chem import RDConfig
 sys.path.append(os.path.join(RDConfig.RDContribDir, 'NP_Score'))
@@ -41,6 +42,22 @@ class NPScorer(Scorer):
 
     def __init__(self):
         self.fscore = npscorer.readNPModel()
+        
+    def __call__(self, smiles: str) -> float:
+        """Scores a molecule using QED.
+
+        :param smiles: A SMILES string.
+        :return: The score of the molecule.
+        """
+        m = Chem.MolFromSmiles(smiles)
+        return (npscorer.scoreMol(m,self.fscore)+5)/10
+
+
+class HSP90Scorer(Scorer):
+    """Scores molecules using Vina docking on HSP90 protein."""
+
+    def __init__(self, n_workers=16):
+        self.oracle = make_oracle(receptor="np", n_workers=n_workers)
         
     def __call__(self, smiles: str) -> float:
         """Scores a molecule using QED.

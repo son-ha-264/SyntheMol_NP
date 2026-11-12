@@ -50,6 +50,9 @@ setup(
         "wandb",
         "transformers==4.57.6",
         "umap-learn",
+        "meeko",
+        "vina",
+        "gemmi"
     ],
     python_requires=">=3.10",
     classifiers=[
