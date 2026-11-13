@@ -75,11 +75,11 @@ class Filters:
     excluded before it is measured, while still blocking the degenerate
     large/greasy solutions RL finds when left unconstrained. Report the values.
     """
-    max_heavy_atoms: int = 50
+    max_heavy_atoms: int = 60
     min_heavy_atoms: int = 12
-    max_mol_weight: float = 750.0
-    max_rotatable_bonds: int = 12
-    max_logp: float = 7.0
+    max_mol_weight: float = 1000.0
+    max_rotatable_bonds: int = 15
+    #max_logp: float = 7.0
 
     def check(self, mol: Chem.Mol) -> Optional[str]:
         if mol.GetNumHeavyAtoms() > self.max_heavy_atoms:
@@ -90,8 +90,8 @@ class Filters:
             return "max_mol_weight"
         if rdMolDescriptors.CalcNumRotatableBonds(mol) > self.max_rotatable_bonds:
             return "max_rotatable_bonds"
-        if Descriptors.MolLogP(mol) > self.max_logp:
-            return "max_logp"
+        #if Descriptors.MolLogP(mol) > self.max_logp:
+        #    return "max_logp"
         return None
 
 

@@ -54,9 +54,10 @@ class NPScorer(Scorer):
 
 
 class HSP90Scorer(Scorer):
-    """Scores molecules using Vina docking on HSP90 protein."""
+    """Scores molecules using Vina docking on HSP90 protein.
+    Reward range [0,1]"""
 
-    def __init__(self, n_workers=16):
+    def __init__(self, n_workers=1):
         self.oracle = make_oracle(receptor="np", n_workers=n_workers)
         
     def __call__(self, smiles: str) -> float:
@@ -65,8 +66,7 @@ class HSP90Scorer(Scorer):
         :param smiles: A SMILES string.
         :return: The score of the molecule.
         """
-        m = Chem.MolFromSmiles(smiles)
-        return (npscorer.scoreMol(m,self.fscore)+5)/10
+        return self.oracle([smiles])[0]
 
     
 class QEDScorer(Scorer):
@@ -360,6 +360,16 @@ def create_scorer(
             raise ValueError("npscore does not use fingerprints.")
 
         scorer = NPScorer()
+
+    elif score_type == "hsp90":
+        if model_path is not None:
+            raise ValueError("hsp90 does not use a model path.")
+
+        if fingerprint_type is not None:
+            raise ValueError("npscore does not use fingerprints.")
+
+        scorer = HSP90Scorer()
+
     else:
         raise ValueError(f"Score type {score_type} is not supported.")
     return scorer

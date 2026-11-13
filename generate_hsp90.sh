@@ -1,0 +1,13 @@
+synthemol \
+    --score_types hsp90 \
+    --chemical_spaces real \
+    --building_blocks_score_columns activity \
+    --save_dir generations/chemprop_hsp90_witht5 \
+    --n_rollout 100 \
+    --search_type rl \
+    --rl_model_type chemprop \
+    --rl_model_fingerprint_type rdkit \
+    --building_blocks_paths  /home/sonh/MAINCE_project/SyntheMol_NP/synthemol/resources/real_hsp90/building_blocks.csv \
+    --rl_prediction_types regression  \
+    --use_gpu \
+    --max_reactions 3 
