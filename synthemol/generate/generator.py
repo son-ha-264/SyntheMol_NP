@@ -340,8 +340,10 @@ class Generator:
                 ]
 
         ### TODO: Run T5 here and add T5 products. Mark that it is non-SMARTS reaction
-        if len(matching_reactions)>0:
-            
+        #if len(matching_reactions)>0:
+        if len(node.molecules) == 0:
+            pass
+        else:
             products_from_t5 = self.t5_model.forward_prediction(smis=['.'.join(list(node.molecules))], products_from_smarts=list(product_set), topk=TOPK, num_beams=NUM_BEAMS)
             products_from_t5 = products_from_t5[0] # The function returns a list in a list [[results]], we just remove the outer list
             #product_set |= set(products_from_t5)
@@ -354,7 +356,8 @@ class Generator:
                     reaction_id=0,
                     reactant_ids=tuple(
                         self.chemical_space_to_building_block_smiles_to_id[
-                            chem_space
+                            #chem_space
+                            'real' # Hard code here. If the model works well, will introduce a parameter
                         ].get(molecule, "-1")
                         for molecule in molecules
                     ),

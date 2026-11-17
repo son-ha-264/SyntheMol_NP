@@ -147,3 +147,5 @@ wandb
 /pretrained
 /junk
 /analysis
+/*.json
+/oracle

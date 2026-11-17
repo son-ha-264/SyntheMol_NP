@@ -19,6 +19,7 @@ from synthemol.models import (
     sklearn_predict_on_molecule_ensemble,
 )
 from synthemol.docking_oracle.hsp90_oracle import make_oracle
+from synthemol.generate.gsk3b_oracle import gsk3b
 import sys, os
 from rdkit.Chem import RDConfig
 sys.path.append(os.path.join(RDConfig.RDContribDir, 'NP_Score'))
@@ -44,7 +45,7 @@ class NPScorer(Scorer):
         self.fscore = npscorer.readNPModel()
         
     def __call__(self, smiles: str) -> float:
-        """Scores a molecule using QED.
+        """Scores a molecule using NPScore.
 
         :param smiles: A SMILES string.
         :return: The score of the molecule.
@@ -53,6 +54,20 @@ class NPScorer(Scorer):
         return (npscorer.scoreMol(m,self.fscore)+5)/10
 
 
+class GSK3BScorer(Scorer):
+    """Scores molecules using GSK3Beta Oracle."""
+
+    def __init__(self):
+        self.score = gsk3b
+        
+    def __call__(self, smiles: str) -> float:
+        """
+        :param smiles: A SMILES string.
+        return: The score of the molecule.
+        """
+        return gsk3b(smiles)    
+
+    
 class HSP90Scorer(Scorer):
     """Scores molecules using Vina docking on HSP90 protein.
     Reward range [0,1]"""
@@ -366,9 +381,18 @@ def create_scorer(
             raise ValueError("hsp90 does not use a model path.")
 
         if fingerprint_type is not None:
-            raise ValueError("npscore does not use fingerprints.")
+            raise ValueError("hsp90 does not use fingerprints.")
 
         scorer = HSP90Scorer()
+
+    elif score_type == "gsk3b":
+        if model_path is not None:
+            raise ValueError("gsk3b does not use a model path.")
+
+        if fingerprint_type is not None:
+            raise ValueError("gsk3b does not use fingerprints.")
+
+        scorer = GSK3BScorer()
 
     else:
         raise ValueError(f"Score type {score_type} is not supported.")
