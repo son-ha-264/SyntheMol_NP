@@ -2,8 +2,8 @@ synthemol \
     --score_types gsk3b \
     --chemical_spaces real \
     --building_blocks_score_columns activity \
-    --save_dir generations/chemprop_gsk3b_witht5 \
-    --n_rollout 200 \
+    --save_dir generations/chemprop_gsk3b_witht5_2 \
+    --n_rollout 2000 \
     --search_type rl \
     --rl_model_type chemprop \
     --rl_model_fingerprint_type rdkit \

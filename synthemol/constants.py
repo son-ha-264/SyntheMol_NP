@@ -70,7 +70,10 @@ REACTION_TO_BUILDING_BLOCKS_PATH = None #DATA_DIR / "real" / "reaction_to_buildi
 
 # Path to t5 forward reaction model
 import torch
-T5_REACTION_MODEL_PATH = "/home/sonh/MAINCE_project/SyntheMol_NP/pretrained/rt5_ft_uspto_npl_custom_replay01_kl01/best"
+T5_REACTION_MODEL_PATH = "/home/sonh/MAINCE_project/SyntheMol_NP/pretrained/rt5_ft_uspto_npl_custom_replay01_kl05/best"
 T5_DEVICE = "cuda" if torch.cuda.is_available() else "cpu"
+RETROFORMER_MODEL_PATH = "/home/sonh/MAINCE_project/SyntheMol_NP/pretrained/retroformer_10000reg"
+FILTERED_LAMBDA = 0.1 # Higher lamb, more importance on scores, less importance on products difference
+FILTERED_K = 5 # Limit to a certain number of products based on a filtering scheme
 TOPK = 10
 NUM_BEAMS = 10

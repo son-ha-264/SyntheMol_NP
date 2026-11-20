@@ -14,12 +14,13 @@ RDLogger.DisableLog("rdApp.*")
 _GEN = rdFingerprintGenerator.GetMorganGenerator(radius=2, fpSize=1024)
 
 class rxnt5():
-    def __init__(self, device, path_t5, k=3, lam=0.65):
+    def __init__(self, device, path_t5, k, lam):
         self.tokenizer = AutoTokenizer.from_pretrained(path_t5, trust_remote_code=True)
         self.model = AutoModelForSeq2SeqLM.from_pretrained(path_t5, trust_remote_code=True).to(device).eval()
         self.device = device
         self.k = k
         self.lam = lam
+        self.path_t5 = path_t5
 
     def forward_prediction(self, smis, products_from_smarts:List[List[str]]=None, topk=10, num_beams=10):
         """Run ReactionT5 model to retrieve products"""
@@ -83,7 +84,7 @@ class rxnt5():
     def _fp(self, mol):
         return _GEN.GetCountFingerprintAsNumPy(mol).astype(np.float32)
 
-    def _select(self, reactant_smiles, scored_beam, products_from_smarts:List[str]=None, k=3, lam=0.2):
+    def _select(self, reactant_smiles, scored_beam, k, lam, products_from_smarts:List[str]=None):
         """beam: [(product_smiles, logprob)]
         One reaction with multiple possible reactants
         """

@@ -28,6 +28,8 @@ from synthemol.constants import (
     T5_DEVICE,
     TOPK,
     NUM_BEAMS,
+    FILTERED_K,
+    FILTERED_LAMBDA
 )
 
 
@@ -131,7 +133,7 @@ class Generator:
         self.log_path = log_path
 
         # Load forward product prediction model
-        self.t5_model = rxnt5(device=T5_DEVICE, path_t5=T5_REACTION_MODEL_PATH)
+        self.t5_model = rxnt5(device=T5_DEVICE, path_t5=T5_REACTION_MODEL_PATH, k=FILTERED_K, lam=FILTERED_LAMBDA)
 
         # Set up list of rollout stats
         self.rollout_stats_record: list[dict[str, Any]] = []

@@ -52,7 +52,8 @@ setup(
         "umap-learn",
         "meeko",
         "vina",
-        "gemmi"
+        "gemmi",
+        "easydict"
     ],
     python_requires=">=3.10",
     classifiers=[

@@ -103,6 +103,7 @@ class Reaction:
             dict.fromkeys(
                 Chem.MolToSmiles(Chem.RemoveHs(product_mol[0]))
                 for product_mol in product_mols
+                if Chem.SanitizeMol(product_mol[0], catchErrors=True) == Chem.SanitizeFlags.SANITIZE_NONE
             )
         )
 
